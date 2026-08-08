@@ -3,20 +3,24 @@ using System.Text.Json.Serialization.Metadata;
 using System.Threading.Channels;
 using CliWrap;
 using CliWrap.EventStream;
+using Microsoft.Extensions.Logging;
 
 namespace Sarsoo.Terraform.Command;
 
 public class TerraformStreamCommand<T>  where T: notnull
 {
+    private readonly ILogger<TerraformStreamCommand<T>>? _logger;
+    
     private readonly JsonTypeInfo<T> _serialiserInfo;
     private readonly Channel<T> Messages = Channel.CreateUnbounded<T>();
     private CliWrap.Command Command { get; set; }
 
     public ChannelReader<T> Output => Messages.Reader;
 
-    public TerraformStreamCommand(string executable, JsonTypeInfo<T> serialiserInfo)
+    public TerraformStreamCommand(string executable, JsonTypeInfo<T> serialiserInfo, ILogger<TerraformStreamCommand<T>>? logger = null)
     {
         _serialiserInfo = serialiserInfo;
+        _logger = logger;
         Command = Cli.Wrap(executable)
             .WithValidation(CommandResultValidation.None);
     }
@@ -37,7 +41,7 @@ public class TerraformStreamCommand<T>  where T: notnull
                 switch (cmdEvent)
                 {
                     case StartedCommandEvent started:
-                        Console.WriteLine($"Process started; ID: {started.ProcessId}");
+                        _logger?.LogInformation("Process started; ID: {ProcessId}", started.ProcessId);
                         break;
                     case StandardOutputCommandEvent stdOut:
 
@@ -47,16 +51,18 @@ public class TerraformStreamCommand<T>  where T: notnull
 
                         break;
                     case StandardErrorCommandEvent stdErr:
-                        Console.WriteLine($"Err> {stdErr.Text}");
+                        _logger?.LogError(stdErr.Text);
                         break;
                     case ExitedCommandEvent exited:
-                        Console.WriteLine($"Process exited; Code: {exited.ExitCode}");
+                        _logger?.LogInformation("Process exited; Code: {ExitCode}", exited.ExitCode);
+                        Messages.Writer.Complete();
                         break;
                 }
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine(e);
+                _logger?.LogError(e, "Exception occured while running Terraform command");
+                Messages.Writer.Complete(e);
             }
         }
     }

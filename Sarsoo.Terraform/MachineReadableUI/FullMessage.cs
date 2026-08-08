@@ -4,7 +4,7 @@ using Sarsoo.Terraform.MachineReadableUI.Drift;
 using Sarsoo.Terraform.MachineReadableUI.Plan;
 
 namespace Sarsoo.Terraform.MachineReadableUI;
-
+ 
 public struct FullMessage
 {
     /// <summary>

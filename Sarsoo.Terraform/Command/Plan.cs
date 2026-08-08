@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
 using Sarsoo.Terraform.MachineReadableUI;
 using Sarsoo.Terraform.MachineReadableUI.Json;
 
@@ -12,9 +13,9 @@ public class Plan
 
     private string? _outputPath = null;
 
-    public Plan(string executable, string workingDirectory)
+    public Plan(string executable, string workingDirectory, ILogger<TerraformStreamCommand<FullMessage>>? logger = null)
     {
-        _command = new TerraformStreamCommand<FullMessage>(executable, MruiContext.Default.FullMessage)
+        _command = new TerraformStreamCommand<FullMessage>(executable, MruiContext.Default.FullMessage, logger)
             .Configure(x =>
                 x.WithWorkingDirectory(workingDirectory));
     }

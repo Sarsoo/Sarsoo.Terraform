@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
 using Sarsoo.Terraform.MachineReadableUI;
 using Sarsoo.Terraform.MachineReadableUI.Json;
 
@@ -13,9 +14,9 @@ public class Init
     private bool _lockState = true;
     private bool _initBackend = true;
 
-    public Init(string executable, string workingDirectory)
+    public Init(string executable, string workingDirectory, ILogger<TerraformStreamCommand<FullMessage>>? logger = null)
     {
-        _command = new TerraformStreamCommand<FullMessage>(executable, MruiContext.Default.FullMessage)
+        _command = new TerraformStreamCommand<FullMessage>(executable, MruiContext.Default.FullMessage, logger)
             .Configure(b => b.WithWorkingDirectory(workingDirectory));
     }
 
