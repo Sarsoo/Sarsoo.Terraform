@@ -27,7 +27,7 @@ public static class ModuleExtensions
         return null;
     }
 
-    public static ModuleReference SourceReference(this TerraformChildModule mod)
+    public static ModuleReference SourceReference(this TerraformModuleCall mod)
     {
         ModuleReference reference = default;
 

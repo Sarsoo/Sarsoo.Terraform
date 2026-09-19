@@ -8,7 +8,7 @@ public class DependencyResolver
 {
     private readonly bool _localModuleAbsolutePaths;
 
-    public record struct ChildModuleSource(string Path, TerraformChildModule Source);
+    public record struct ChildModuleSource(string Path, TerraformModuleCall Source);
     public record struct ReverseModuleSource(string Path, TerraformModule Source);
 
     /// <summary>
@@ -37,7 +37,7 @@ public class DependencyResolver
             }
 
             var source = TerraformModule.LoadFromDirectory(r);
-            foreach (var cm in source.ChildModules)
+            foreach (var cm in source.ModuleCalls)
             {
                 // source value, path the child module was found
                 var childModuleInvocationReference = new ChildModuleSource(r, cm);
