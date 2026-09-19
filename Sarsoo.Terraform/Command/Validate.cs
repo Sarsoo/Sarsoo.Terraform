@@ -15,5 +15,5 @@ public class Validate
                     .WithWorkingDirectory(workingDirectory));
     }
 
-    public Task<ValidationOutput?> Run() => _command.Run();
+    public Task<ValidationOutput?> Run(CancellationToken ct = default) => _command.Run(ct);
 }

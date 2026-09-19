@@ -16,5 +16,5 @@ public class ShowState
                     .WithWorkingDirectory(workingDirectory));
     }
 
-    public Task<StateRepresentation?> Run() => _command.Run();
+    public Task<StateRepresentation?> Run(CancellationToken ct = default) => _command.Run(ct);
 }

@@ -7,21 +7,23 @@ using Microsoft.Extensions.Logging;
 
 namespace Sarsoo.Terraform.Command;
 
-public class TerraformStreamCommand<T>  where T: notnull
+public class TerraformStreamCommand<T> where T : notnull
 {
     private readonly ILogger<TerraformStreamCommand<T>>? _logger;
-    
+
     private readonly JsonTypeInfo<T> _serialiserInfo;
     private readonly Channel<T> Messages = Channel.CreateUnbounded<T>();
     private CliWrap.Command Command { get; set; }
 
     public ChannelReader<T> Output => Messages.Reader;
 
-    public TerraformStreamCommand(string executable, JsonTypeInfo<T> serialiserInfo, ILogger<TerraformStreamCommand<T>>? logger = null)
+    public TerraformStreamCommand(string executable, JsonTypeInfo<T> serialiserInfo,
+        ILogger<TerraformStreamCommand<T>>? logger = null)
     {
         _serialiserInfo = serialiserInfo;
         _logger = logger;
         Command = Cli.Wrap(executable)
+            .WithEnvironmentVariables(e => e.Set("TF_IN_AUTOMATION", "true"))
             .WithValidation(CommandResultValidation.None);
     }
 
@@ -32,38 +34,50 @@ public class TerraformStreamCommand<T>  where T: notnull
         return this;
     }
 
-    public async Task Run()
+    public async Task Run(CancellationToken ct = default)
     {
-        await foreach (var cmdEvent in Command.ListenAsync())
+        Exception? exception = null;
+        try
         {
-            try
+            await foreach (var cmdEvent in Command.ListenAsync(cancellationToken: ct))
             {
-                switch (cmdEvent)
+                try
                 {
-                    case StartedCommandEvent started:
-                        _logger?.LogInformation("Process started; ID: {ProcessId}", started.ProcessId);
-                        break;
-                    case StandardOutputCommandEvent stdOut:
+                    switch (cmdEvent)
+                    {
+                        case StartedCommandEvent started:
+                            _logger?.LogInformation("Process started; ID: {ProcessId}", started.ProcessId);
+                            break;
+                        case StandardOutputCommandEvent stdOut:
 
-                        var message = JsonSerializer.Deserialize(stdOut.Text, _serialiserInfo);
+                            var message = JsonSerializer.Deserialize(stdOut.Text, _serialiserInfo);
 
-                        await Messages.Writer.WriteAsync(message);
+                            await Messages.Writer.WriteAsync(message, ct);
 
-                        break;
-                    case StandardErrorCommandEvent stdErr:
-                        _logger?.LogError(stdErr.Text);
-                        break;
-                    case ExitedCommandEvent exited:
-                        _logger?.LogInformation("Process exited; Code: {ExitCode}", exited.ExitCode);
-                        Messages.Writer.Complete();
-                        break;
+                            break;
+                        case StandardErrorCommandEvent stdErr:
+                            _logger?.LogError(stdErr.Text);
+                            break;
+                        case ExitedCommandEvent exited:
+                            _logger?.LogInformation("Process exited; Code: {ExitCode}", exited.ExitCode);
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    exception = e;
+                    _logger?.LogError(e, "Exception occured while running Terraform command");
                 }
             }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Exception occured while running Terraform command");
-                Messages.Writer.Complete(e);
-            }
+        }
+        catch (Exception e)
+        {
+            exception = e;
+            _logger?.LogError(e, "Exception occured while running Terraform command");
+        }
+        finally
+        {
+            Messages.Writer.Complete(exception);
         }
     }
 }

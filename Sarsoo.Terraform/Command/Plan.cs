@@ -26,7 +26,7 @@ public class Plan
         return this;
     }
 
-    public Task Run() => _command
+    public Task Run(CancellationToken ct = default) => _command
         .Configure(x =>
             x.WithArguments(b =>
             {
@@ -36,5 +36,5 @@ public class Plan
                 {
                     b.Add("-out").Add(_outputPath);
                 }
-            })).Run();
+            })).Run(ct);
 }

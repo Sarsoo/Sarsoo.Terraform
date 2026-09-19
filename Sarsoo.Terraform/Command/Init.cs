@@ -38,7 +38,7 @@ public class Init
         return this;
     }
 
-    public Task Run() => _command
+    public Task Run(CancellationToken ct = default) => _command
         .Configure(x =>
             x.WithArguments(b =>
                 {
@@ -57,5 +57,5 @@ public class Init
                     {
                         b.Add("-backend=false");
                     }
-                })).Run();
+                })).Run(ct);
 }

@@ -23,7 +23,7 @@ public class ShowPlan
         return this;
     }
 
-    public Task<PlanRepresentation?> Run() {
+    public Task<PlanRepresentation?> Run(CancellationToken ct = default) {
 
         if (string.IsNullOrWhiteSpace(filePath))
         {
@@ -31,6 +31,6 @@ public class ShowPlan
         }
 
         return _command.Configure(x => x.WithArguments(["show", "-json", filePath]))
-            .Run();
+            .Run(ct);
     }
 }

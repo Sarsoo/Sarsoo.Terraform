@@ -14,6 +14,7 @@ public class TerraformCommand<T> where T: notnull
     {
         _serialiserInfo = serialiserInfo;
         Command = Cli.Wrap(executable)
+            .WithEnvironmentVariables(e => e.Set("TF_IN_AUTOMATION", "true"))
             .WithValidation(CommandResultValidation.None);
     }
 
@@ -24,9 +25,9 @@ public class TerraformCommand<T> where T: notnull
         return this;
     }
 
-    public async Task<T?> Run()
+    public async Task<T?> Run(CancellationToken ct = default)
     {
-        var result = await Command.ExecuteBufferedAsync();
+        var result = await Command.ExecuteBufferedAsync(cancellationToken: ct);
 
         return JsonSerializer.Deserialize(result, _serialiserInfo);
     }

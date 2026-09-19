@@ -25,7 +25,7 @@ public class Apply
         return this;
     }
 
-    public Task Run() => _command
+    public Task Run(CancellationToken ct = default) => _command
         .Configure(x =>
             x.WithArguments(b =>
             {
@@ -35,5 +35,5 @@ public class Apply
                 {
                     b.Add(_planFilePath);
                 }
-            })).Run();
+            })).Run(ct);
 }
