@@ -1,8 +1,19 @@
 using System.Text.Json.Serialization;
+using Sarsoo.Terraform.MachineReadableUI.Drift;
+using Sarsoo.Terraform.MachineReadableUI.Plan;
 
 namespace Sarsoo.Terraform.MachineReadableUI;
 
-public struct BaseMessage
+[JsonPolymorphic(
+    TypeDiscriminatorPropertyName = "type",
+    UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor
+)]
+[JsonDerivedType(typeof(Version), typeDiscriminator: "version")]
+[JsonDerivedType(typeof(ResourceDriftMessage), typeDiscriminator: "resource_drift")]
+[JsonDerivedType(typeof(PlannedChangeMessage), typeDiscriminator: "planned_change")]
+[JsonDerivedType(typeof(ChangeSummaryMessage), typeDiscriminator: "change_summary")]
+[JsonDerivedType(typeof(OutputsMessage), typeDiscriminator: "outputs")]
+public class BaseMessage
 {
     /// <summary>
     /// this is normally "info", but can be "error" or "warn" when showing diagnostics
@@ -27,6 +38,6 @@ public struct BaseMessage
     /// <summary>
     /// defines which kind of message this is and determines how to interpret other keys which may be present
     /// </summary>
-    [JsonPropertyName("type")]
-    public string Type { get; set; }
+    // [JsonPropertyName("type")]
+    // public string Type { get; set; }
 }

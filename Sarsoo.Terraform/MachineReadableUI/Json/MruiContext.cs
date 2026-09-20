@@ -5,7 +5,11 @@ using Sarsoo.Terraform.MachineReadableUI.Validate;
 
 namespace Sarsoo.Terraform.MachineReadableUI.Json;
 
-[JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
+[JsonSourceGenerationOptions(
+    PropertyNameCaseInsensitive = true, 
+    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower, 
+    AllowOutOfOrderMetadataProperties = true
+)]
 [JsonSerializable(typeof(BaseMessage))]
 [JsonSerializable(typeof(FullMessage))]
 
