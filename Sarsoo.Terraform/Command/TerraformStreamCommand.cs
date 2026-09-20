@@ -10,15 +10,29 @@ namespace Sarsoo.Terraform.Command;
 
 public class TerraformStreamCommand
 {
+    private readonly OutputFormat _outputFormat;
     private readonly ILogger<TerraformStreamCommand>? _logger;
-    
-    private readonly Channel<TerraformMessage> _messages = Channel.CreateUnbounded<TerraformMessage>();
+
+    private readonly Channel<TerraformMessage>? _messages;
+    private readonly Channel<string>? _jsonMessages;
     private CliWrap.Command Command { get; set; }
 
-    public ChannelReader<TerraformMessage> Output => _messages.Reader;
+    public ChannelReader<TerraformMessage>? MessageOutput => _messages?.Reader;
+    public ChannelReader<string>? JsonOutput => _jsonMessages?.Reader;
 
-    public TerraformStreamCommand(string executable, ILogger<TerraformStreamCommand>? logger = null)
+    public TerraformStreamCommand(string executable, OutputFormat outputFormat = OutputFormat.Parsed, ILogger<TerraformStreamCommand>? logger = null)
     {
+        _outputFormat = outputFormat;
+
+        if (outputFormat.HasFlag(OutputFormat.Parsed))
+        {
+            _messages = Channel.CreateUnbounded<TerraformMessage>();
+        }
+        if (outputFormat.HasFlag(OutputFormat.Json))
+        {
+            _jsonMessages = Channel.CreateUnbounded<string>();
+        }
+        
         _logger = logger;
         Command = Cli.Wrap(executable)
             .WithEnvironmentVariables(e => e.Set("TF_IN_AUTOMATION", "true"))
@@ -47,18 +61,23 @@ public class TerraformStreamCommand
                             _logger?.LogInformation("Process started; ID: {ProcessId}", started.ProcessId);
                             break;
                         case StandardOutputCommandEvent stdOut:
-
-                            var message = JsonSerializer.Deserialize(stdOut.Text, MruiContext.Default.TerraformMessage);
                             
-                            if (message is not null)
-                            { 
-                                await _messages.Writer.WriteAsync(message, ct);
-                            }
-                            else
-                            {
-                                _logger?.LogWarning("JSON deserialisation returned null");
-                            }
+                            _jsonMessages?.Writer.TryWrite(stdOut.Text);
 
+                            if (_messages is not null)
+                            {
+                                var message = JsonSerializer.Deserialize(stdOut.Text, MruiContext.Default.TerraformMessage);
+                            
+                                if (message is not null)
+                                {
+                                    _messages?.Writer.TryWrite(message);
+                                }
+                                else
+                                {
+                                    _logger?.LogWarning("JSON deserialisation returned null");
+                                }
+                            }
+                            
                             break;
                         case StandardErrorCommandEvent stdErr:
                             _logger?.LogError(stdErr.Text);
@@ -82,7 +101,8 @@ public class TerraformStreamCommand
         }
         finally
         {
-            _messages.Writer.Complete(exception);
+            _messages?.Writer.Complete(exception);
+            _jsonMessages?.Writer.Complete(exception);
         }
     }
 }

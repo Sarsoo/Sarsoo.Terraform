@@ -9,14 +9,16 @@ public class Init
 {
     private readonly TerraformStreamCommand _command;
 
-    public ChannelReader<TerraformMessage> Output => _command.Output;
+    public ChannelReader<TerraformMessage>? Output => _command.MessageOutput;
+    public ChannelReader<string>? JsonOutput => _command.JsonOutput;
+    
     private bool _includeUpgrade = false;
     private bool _lockState = true;
     private bool _initBackend = true;
 
-    public Init(string executable, string workingDirectory, ILogger<TerraformStreamCommand>? logger = null)
+    public Init(string executable, string workingDirectory, OutputFormat outputFormat = OutputFormat.Parsed, ILogger<TerraformStreamCommand>? logger = null)
     {
-        _command = new TerraformStreamCommand(executable, logger)
+        _command = new TerraformStreamCommand(executable, outputFormat, logger: logger)
             .Configure(b => b.WithWorkingDirectory(workingDirectory));
     }
 
