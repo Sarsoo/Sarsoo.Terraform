@@ -1,6 +1,6 @@
 namespace Sarsoo.Terraform.MachineReadableUI.Plan;
 
-public class OutputsMessage: BaseMessage
+public class OutputsMessage: TerraformMessage
 {
     public Dictionary<string, Outputs> Outputs { get; set; }
 }

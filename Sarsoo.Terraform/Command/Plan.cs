@@ -7,15 +7,15 @@ namespace Sarsoo.Terraform.Command;
 
 public class Plan
 {
-    private readonly TerraformStreamCommand<BaseMessage> _command;
+    private readonly TerraformStreamCommand _command;
 
-    public ChannelReader<BaseMessage> Output => _command.Output;
+    public ChannelReader<TerraformMessage> Output => _command.Output;
 
     private string? _outputPath = null;
 
-    public Plan(string executable, string workingDirectory, ILogger<TerraformStreamCommand<BaseMessage>>? logger = null)
+    public Plan(string executable, string workingDirectory, ILogger<TerraformStreamCommand>? logger = null)
     {
-        _command = new TerraformStreamCommand<BaseMessage>(executable, MruiContext.Default.BaseMessage, logger)
+        _command = new TerraformStreamCommand(executable, logger)
             .Configure(x =>
                 x.WithWorkingDirectory(workingDirectory));
     }

@@ -11,7 +11,7 @@ public class PlanGenerator
     private Sarsoo.Terraform.Command.Plan _generate;
     private ShowPlan _parse;
 
-    public ChannelReader<FullMessage> PlanOutput => _generate.Output;
+    public ChannelReader<TerraformMessage> PlanOutput => _generate.Output;
 
     public PlanGenerator(string executable, string workingDirectory)
     {

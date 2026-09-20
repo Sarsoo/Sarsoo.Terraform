@@ -1,33 +1,31 @@
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 using System.Threading.Channels;
 using CliWrap;
 using CliWrap.EventStream;
 using Microsoft.Extensions.Logging;
+using Sarsoo.Terraform.MachineReadableUI;
+using Sarsoo.Terraform.MachineReadableUI.Json;
 
 namespace Sarsoo.Terraform.Command;
 
-public class TerraformStreamCommand<T> where T : notnull
+public class TerraformStreamCommand
 {
-    private readonly ILogger<TerraformStreamCommand<T>>? _logger;
-
-    private readonly JsonTypeInfo<T> _serialiserInfo;
-    private readonly Channel<T> Messages = Channel.CreateUnbounded<T>();
+    private readonly ILogger<TerraformStreamCommand>? _logger;
+    
+    private readonly Channel<TerraformMessage> _messages = Channel.CreateUnbounded<TerraformMessage>();
     private CliWrap.Command Command { get; set; }
 
-    public ChannelReader<T> Output => Messages.Reader;
+    public ChannelReader<TerraformMessage> Output => _messages.Reader;
 
-    public TerraformStreamCommand(string executable, JsonTypeInfo<T> serialiserInfo,
-        ILogger<TerraformStreamCommand<T>>? logger = null)
+    public TerraformStreamCommand(string executable, ILogger<TerraformStreamCommand>? logger = null)
     {
-        _serialiserInfo = serialiserInfo;
         _logger = logger;
         Command = Cli.Wrap(executable)
             .WithEnvironmentVariables(e => e.Set("TF_IN_AUTOMATION", "true"))
             .WithValidation(CommandResultValidation.None);
     }
 
-    public TerraformStreamCommand<T> Configure(Func<CliWrap.Command, CliWrap.Command> configure)
+    public TerraformStreamCommand Configure(Func<CliWrap.Command, CliWrap.Command> configure)
     {
         Command = configure.Invoke(Command);
 
@@ -50,9 +48,16 @@ public class TerraformStreamCommand<T> where T : notnull
                             break;
                         case StandardOutputCommandEvent stdOut:
 
-                            var message = JsonSerializer.Deserialize(stdOut.Text, _serialiserInfo);
-
-                            await Messages.Writer.WriteAsync(message, ct);
+                            var message = JsonSerializer.Deserialize(stdOut.Text, MruiContext.Default.TerraformMessage);
+                            
+                            if (message is not null)
+                            { 
+                                await _messages.Writer.WriteAsync(message, ct);
+                            }
+                            else
+                            {
+                                _logger?.LogWarning("JSON deserialisation returned null");
+                            }
 
                             break;
                         case StandardErrorCommandEvent stdErr:
@@ -77,7 +82,7 @@ public class TerraformStreamCommand<T> where T : notnull
         }
         finally
         {
-            Messages.Writer.Complete(exception);
+            _messages.Writer.Complete(exception);
         }
     }
 }

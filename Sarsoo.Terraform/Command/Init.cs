@@ -7,16 +7,16 @@ namespace Sarsoo.Terraform.Command;
 
 public class Init
 {
-    private readonly TerraformStreamCommand<FullMessage> _command;
+    private readonly TerraformStreamCommand _command;
 
-    public ChannelReader<FullMessage> Output => _command.Output;
+    public ChannelReader<TerraformMessage> Output => _command.Output;
     private bool _includeUpgrade = false;
     private bool _lockState = true;
     private bool _initBackend = true;
 
-    public Init(string executable, string workingDirectory, ILogger<TerraformStreamCommand<FullMessage>>? logger = null)
+    public Init(string executable, string workingDirectory, ILogger<TerraformStreamCommand>? logger = null)
     {
-        _command = new TerraformStreamCommand<FullMessage>(executable, MruiContext.Default.FullMessage, logger)
+        _command = new TerraformStreamCommand(executable, logger)
             .Configure(b => b.WithWorkingDirectory(workingDirectory));
     }
 

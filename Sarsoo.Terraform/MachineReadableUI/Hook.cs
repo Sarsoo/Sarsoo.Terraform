@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Sarsoo.Terraform.MachineReadableUI.Apply;
+namespace Sarsoo.Terraform.MachineReadableUI;
 
 public struct Hook
 {

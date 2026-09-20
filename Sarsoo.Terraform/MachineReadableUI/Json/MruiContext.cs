@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using Sarsoo.Terraform.MachineReadableUI.Apply;
 using Sarsoo.Terraform.MachineReadableUI.Drift;
 using Sarsoo.Terraform.MachineReadableUI.Validate;
 
@@ -10,8 +9,7 @@ namespace Sarsoo.Terraform.MachineReadableUI.Json;
     PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower, 
     AllowOutOfOrderMetadataProperties = true
 )]
-[JsonSerializable(typeof(BaseMessage))]
-[JsonSerializable(typeof(FullMessage))]
+[JsonSerializable(typeof(TerraformMessage))]
 
 [JsonSerializable(typeof(Resource))]
 [JsonSerializable(typeof(ResourceDriftChange))]
