@@ -17,6 +17,7 @@ namespace Sarsoo.Terraform.MachineReadableUI;
 [JsonDerivedType(typeof(VersionMessage), typeDiscriminator:  MruiConst.Type.Version)]
 [JsonDerivedType(typeof(InitOutputMessage), typeDiscriminator: MruiConst.Type.Init.Output)]
 [JsonDerivedType(typeof(LogMessage), typeDiscriminator: MruiConst.Type.Init.Log)]
+[JsonDerivedType(typeof(DiagnosticMessage), typeDiscriminator: MruiConst.Type.Diagnostic)]
 
 [JsonDerivedType(typeof(ResourceDriftMessage), typeDiscriminator: MruiConst.MessageCode.OperationResults.Drift)]
 [JsonDerivedType(typeof(PlannedChangeMessage), typeDiscriminator: MruiConst.MessageCode.OperationResults.PlannedChange)]
