@@ -51,7 +51,7 @@ public class TerraformStreamCommand
         Exception? exception = null;
         try
         {
-            await foreach (var cmdEvent in Command.ListenAsync(cancellationToken: ct))
+            await foreach (var cmdEvent in Command.ListenAsync(cancellationToken: ct).ConfigureAwait(false))
             {
                 try
                 {

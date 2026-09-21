@@ -6,15 +6,16 @@ namespace Sarsoo.Terraform.Command;
 
 public class ShowState
 {
-    private readonly TerraformCommand<StateRepresentation> _command;
+    private readonly TerraformCommand _command;
 
     public ShowState(string executable, string workingDirectory)
     {
-        _command = new TerraformCommand<StateRepresentation>(executable, JsonOutputContext.Default.StateRepresentation)
+        _command = new TerraformCommand(executable)
             .Configure(x =>
                 x.WithArguments(["show", "-json"])
                     .WithWorkingDirectory(workingDirectory));
     }
 
-    public Task<StateRepresentation?> Run(CancellationToken ct = default) => _command.Run(ct);
+    public Task<string> Run(CancellationToken ct = default) => _command.Run(ct);
+    public Task<StateRepresentation?> RunParsed(CancellationToken ct = default) => _command.Run<StateRepresentation>(JsonOutputContext.Default.StateRepresentation, ct);
 }

@@ -5,30 +5,35 @@ using CliWrap.Buffered;
 
 namespace Sarsoo.Terraform.Command;
 
-public class TerraformCommand<T> where T: notnull
+public class TerraformCommand
 {
-    private readonly JsonTypeInfo<T> _serialiserInfo;
     private CliWrap.Command Command { get; set; }
 
-    public TerraformCommand(string executable, JsonTypeInfo<T> serialiserInfo)
+    public TerraformCommand(string executable)
     {
-        _serialiserInfo = serialiserInfo;
         Command = Cli.Wrap(executable)
             .WithEnvironmentVariables(e => e.Set("TF_IN_AUTOMATION", "true"))
             .WithValidation(CommandResultValidation.None);
     }
 
-    public TerraformCommand<T> Configure(Func<CliWrap.Command, CliWrap.Command> configure)
+    public TerraformCommand Configure(Func<CliWrap.Command, CliWrap.Command> configure)
     {
         Command = configure.Invoke(Command);
 
         return this;
     }
 
-    public async Task<T?> Run(CancellationToken ct = default)
+    public async Task<string> Run(CancellationToken ct = default)
     {
-        var result = await Command.ExecuteBufferedAsync(cancellationToken: ct);
+        var result = await Command.ExecuteBufferedAsync(cancellationToken: ct).ConfigureAwait(false);
 
-        return JsonSerializer.Deserialize(result, _serialiserInfo);
+        return result.StandardOutput;
+    }
+
+    public async Task<T?> Run<T>(JsonTypeInfo<T> serialiserInfo, CancellationToken ct = default)
+    {
+        var result = await Command.ExecuteBufferedAsync(cancellationToken: ct).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize(result, serialiserInfo);
     }
 }

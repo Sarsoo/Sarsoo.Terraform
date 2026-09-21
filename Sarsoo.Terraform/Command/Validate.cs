@@ -5,15 +5,16 @@ namespace Sarsoo.Terraform.Command;
 
 public class Validate
 {
-    private readonly TerraformCommand<ValidationOutput> _command;
+    private readonly TerraformCommand _command;
 
     public Validate(string executable, string workingDirectory)
     {
-        _command = new TerraformCommand<ValidationOutput>(executable, MruiContext.Default.ValidationOutput)
+        _command = new TerraformCommand(executable)
             .Configure(x =>
                 x.WithArguments(["validate", "-json"])
                     .WithWorkingDirectory(workingDirectory));
     }
 
-    public Task<ValidationOutput?> Run(CancellationToken ct = default) => _command.Run(ct);
+    public Task<string> Run(CancellationToken ct = default) => _command.Run(ct);
+    public Task<ValidationOutput?> RunParsed(CancellationToken ct = default) => _command.Run<ValidationOutput>(MruiContext.Default.ValidationOutput, ct);
 }

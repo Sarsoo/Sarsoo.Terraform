@@ -7,13 +7,13 @@ namespace Sarsoo.Terraform.Command;
 
 public class ShowPlan
 {
-    private readonly TerraformCommand<PlanRepresentation> _command;
+    private readonly TerraformCommand _command;
 
     private string? filePath = null;
 
     public ShowPlan(string executable, string workingDirectory)
     {
-        _command = new TerraformCommand<PlanRepresentation>(executable, JsonOutputContext.Default.PlanRepresentation)
+        _command = new TerraformCommand(executable)
             .Configure(x => x.WithWorkingDirectory(workingDirectory));
     }
 
@@ -23,14 +23,16 @@ public class ShowPlan
         return this;
     }
 
-    public Task<PlanRepresentation?> Run(CancellationToken ct = default) {
-
+    private TerraformCommand GetCommand()
+    {
         if (string.IsNullOrWhiteSpace(filePath))
         {
             throw new FilePathMissingException();
         }
 
-        return _command.Configure(x => x.WithArguments(["show", "-json", filePath]))
-            .Run(ct);
+        return _command.Configure(x => x.WithArguments(["show", "-json", filePath]));
     }
+
+    public Task<string> Run(CancellationToken ct = default) => GetCommand().Run(ct);
+    public Task<PlanRepresentation?> RunParsed(CancellationToken ct = default)  => GetCommand().Run<PlanRepresentation>(JsonOutputContext.Default.PlanRepresentation, ct);
 }
