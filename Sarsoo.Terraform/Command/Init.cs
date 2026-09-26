@@ -5,7 +5,7 @@ using Sarsoo.Terraform.MachineReadableUI.Json;
 
 namespace Sarsoo.Terraform.Command;
 
-public class Init
+public class Init: ITerraformCommandStreaming
 {
     private readonly TerraformStreamCommand _command;
 
@@ -15,6 +15,9 @@ public class Init
     private bool _includeUpgrade = false;
     private bool _lockState = true;
     private bool _initBackend = true;
+    
+    public bool Errored => _command.Errored;
+    public int ExitCode =>  _command.ExitCode;
 
     public Init(string executable, string workingDirectory, OutputFormat outputFormat = OutputFormat.Parsed, ILogger<TerraformStreamCommand>? logger = null)
     {

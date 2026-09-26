@@ -4,7 +4,7 @@ using JsonOutputContext = Sarsoo.Terraform.JsonOutput.JsonOutputContext;
 
 namespace Sarsoo.Terraform.Command;
 
-public class ShowState
+public class ShowState: ITerraformCommandSingle<StateRepresentation>
 {
     private readonly TerraformCommand _command;
 
@@ -18,4 +18,7 @@ public class ShowState
 
     public Task<string> Run(CancellationToken ct = default) => _command.Run(ct);
     public Task<StateRepresentation?> RunParsed(CancellationToken ct = default) => _command.Run<StateRepresentation>(JsonOutputContext.Default.StateRepresentation, ct);
+    
+    public bool Errored => _command.Errored;
+    public int ExitCode =>  _command.ExitCode;
 }

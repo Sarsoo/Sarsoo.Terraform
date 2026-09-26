@@ -7,14 +7,18 @@ using Sarsoo.Terraform.MachineReadableUI;
 
 namespace Sarsoo.Terraform.Plan;
 
-public class PlanGenerator
+public class PlanGenerator: ITerraformCommandStreaming, ITerraformCommandSingle
 {
     private readonly ILogger<PlanGenerator>? _logger;
     private Sarsoo.Terraform.Command.Plan _generate;
     private ShowPlan _parse;
+    
+    public bool Errored => _generate.Errored;
+    public int ExitCode { get; }
 
-    public ChannelReader<TerraformMessage>? PlanOutput => _generate.Output;
-    public ChannelReader<string>? PlanJsonOutput => _generate.JsonOutput;
+    public ChannelReader<TerraformMessage>? Output => _generate.Output;
+    public ChannelReader<string>? JsonOutput =>  _generate.JsonOutput;
+    Task ITerraformCommandStreaming.Run(CancellationToken ct) => Run(ct);
     
     private string _filePath;
 

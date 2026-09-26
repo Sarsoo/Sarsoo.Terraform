@@ -8,6 +8,10 @@ namespace Sarsoo.Terraform.Command;
 public class TerraformCommand
 {
     private CliWrap.Command Command { get; set; }
+    
+    private int? _exitCode = null;
+    public int ExitCode => _exitCode ?? throw new InvalidOperationException("Command has not finished");
+    public bool Errored => ((_exitCode ?? 0) > 0);
 
     public TerraformCommand(string executable)
     {
@@ -26,6 +30,8 @@ public class TerraformCommand
     public async Task<string> Run(CancellationToken ct = default)
     {
         var result = await Command.ExecuteBufferedAsync(cancellationToken: ct).ConfigureAwait(false);
+        
+        _exitCode = result.ExitCode;
 
         return result.StandardOutput;
     }
@@ -34,6 +40,8 @@ public class TerraformCommand
     {
         var result = await Command.ExecuteBufferedAsync(cancellationToken: ct).ConfigureAwait(false);
 
+        _exitCode = result.ExitCode;
+        
         return JsonSerializer.Deserialize(result, serialiserInfo);
     }
 }

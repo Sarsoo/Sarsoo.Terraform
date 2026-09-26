@@ -5,7 +5,7 @@ using Sarsoo.Terraform.MachineReadableUI.Json;
 
 namespace Sarsoo.Terraform.Command;
 
-public class Plan
+public class Plan: ITerraformCommandStreaming
 {
     private readonly TerraformStreamCommand _command;
 
@@ -13,6 +13,9 @@ public class Plan
     public ChannelReader<string>? JsonOutput => _command.JsonOutput;
 
     private string? _outputPath = null;
+    
+    public bool Errored => _command.Errored;
+    public int ExitCode =>  _command.ExitCode;
 
     public Plan(string executable, string workingDirectory, OutputFormat outputFormat = OutputFormat.Parsed, ILogger<TerraformStreamCommand>? logger = null)
     {

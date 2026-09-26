@@ -17,6 +17,11 @@ public class TerraformStreamCommand
     private readonly Channel<string>? _jsonMessages;
     private CliWrap.Command Command { get; set; }
 
+    private int? _exitCode = null;
+    public int ExitCode => _exitCode ?? throw new InvalidOperationException("Command has not finished");
+    public bool Errored => ((_exitCode ?? 0) > 0) || _errorLogFound;
+    private bool _errorLogFound = false;
+
     public ChannelReader<TerraformMessage>? MessageOutput => _messages?.Reader;
     public ChannelReader<string>? JsonOutput => _jsonMessages?.Reader;
 
@@ -70,6 +75,10 @@ public class TerraformStreamCommand
                             
                                 if (message is not null)
                                 {
+                                    if (message.Level.Equals("error", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        _errorLogFound = true;
+                                    }
                                     _messages?.Writer.TryWrite(message);
                                 }
                                 else
@@ -84,6 +93,7 @@ public class TerraformStreamCommand
                             break;
                         case ExitedCommandEvent exited:
                             _logger?.LogInformation("Process exited; Code: {ExitCode}", exited.ExitCode);
+                            _exitCode = exited.ExitCode;
                             break;
                     }
                 }

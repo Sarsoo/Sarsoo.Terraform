@@ -5,7 +5,7 @@ using JsonOutputContext = Sarsoo.Terraform.JsonOutput.JsonOutputContext;
 
 namespace Sarsoo.Terraform.Command;
 
-public class ShowPlan
+public class ShowPlan: ITerraformCommandSingle<PlanRepresentation>
 {
     private readonly TerraformCommand _command;
 
@@ -35,4 +35,7 @@ public class ShowPlan
 
     public Task<string> Run(CancellationToken ct = default) => GetCommand().Run(ct);
     public Task<PlanRepresentation?> RunParsed(CancellationToken ct = default)  => GetCommand().Run<PlanRepresentation>(JsonOutputContext.Default.PlanRepresentation, ct);
+    
+    public bool Errored => _command.Errored;
+    public int ExitCode =>  _command.ExitCode;
 }
