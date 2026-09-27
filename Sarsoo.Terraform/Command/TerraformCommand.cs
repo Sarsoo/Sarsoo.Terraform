@@ -31,7 +31,7 @@ public class TerraformCommand
 
     public async Task<string> Run(CancellationToken ct = default)
     {
-        using var trace = Tracing.Source.StartActivity();
+        using var trace = Tracing.Source.StartActivity("TerraformCommand::Run");
         trace?.AddTag(ObservabilityConstants.WorkingDirectory, Command.WorkingDirPath);
         var result = await Command.ExecuteBufferedAsync(cancellationToken: ct).ConfigureAwait(false);
         
@@ -44,7 +44,7 @@ public class TerraformCommand
 
     public async Task<T?> Run<T>(JsonTypeInfo<T> serialiserInfo, CancellationToken ct = default)
     {
-        using var trace = Tracing.Source.StartActivity();
+        using var trace = Tracing.Source.StartActivity("TerraformCommand::Run");
         trace?.AddTag(ObservabilityConstants.WorkingDirectory, Command.WorkingDirPath);
         var result = await Command.ExecuteBufferedAsync(cancellationToken: ct).ConfigureAwait(false);
 

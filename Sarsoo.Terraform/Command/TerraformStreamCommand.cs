@@ -55,7 +55,7 @@ public class TerraformStreamCommand
 
     public async Task Run(CancellationToken ct = default)
     {
-        using var trace = Tracing.Source.StartActivity();
+        using var trace = Tracing.Source.StartActivity("TerraformStreamCommand::Run");
         Exception? exception = null;
         try
         {
@@ -98,7 +98,8 @@ public class TerraformStreamCommand
                         case ExitedCommandEvent exited:
                             trace?.AddEvent(new("Process Ended"));
                             _logger?.LogInformation("Process exited; Code: {ExitCode}", exited.ExitCode);
-                            _exitCode = exited.ExitCode;
+                            _exitCode = exited.ExitCode; 
+                            trace?.AddTag(ObservabilityConstants.ExitCode, _exitCode);
                             break;
                     }
                 }

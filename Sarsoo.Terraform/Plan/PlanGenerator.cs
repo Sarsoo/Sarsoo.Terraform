@@ -34,7 +34,7 @@ public class PlanGenerator: ITerraformCommandStreaming, ITerraformCommandSingle
 
     public async Task<string> Run(CancellationToken ct = default)
     {
-        using var trace = Tracing.Source.StartActivity();
+        using var trace = Tracing.Source.StartActivity("PlanGenerator::Run");
         _logger?.LogInformation("Generating plan...");
         _generate.WithOutputFile(_filePath);
         await _generate.Run(ct).ConfigureAwait(false);
