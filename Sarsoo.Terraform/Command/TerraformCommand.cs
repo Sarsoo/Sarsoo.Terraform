@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using CliWrap;
 using CliWrap.Buffered;
+using Sarsoo.Terraform.Observability;
 
 namespace Sarsoo.Terraform.Command;
 
@@ -29,18 +31,26 @@ public class TerraformCommand
 
     public async Task<string> Run(CancellationToken ct = default)
     {
+        using var trace = Tracing.Source.StartActivity();
+        trace?.AddTag(ObservabilityConstants.WorkingDirectory, Command.WorkingDirPath);
         var result = await Command.ExecuteBufferedAsync(cancellationToken: ct).ConfigureAwait(false);
         
         _exitCode = result.ExitCode;
+        trace?.AddTag(ObservabilityConstants.ExitCode, _exitCode);
+        trace?.SetStatus(Errored ? ActivityStatusCode.Error : ActivityStatusCode.Ok);
 
         return result.StandardOutput;
     }
 
     public async Task<T?> Run<T>(JsonTypeInfo<T> serialiserInfo, CancellationToken ct = default)
     {
+        using var trace = Tracing.Source.StartActivity();
+        trace?.AddTag(ObservabilityConstants.WorkingDirectory, Command.WorkingDirPath);
         var result = await Command.ExecuteBufferedAsync(cancellationToken: ct).ConfigureAwait(false);
 
         _exitCode = result.ExitCode;
+        trace?.AddTag(ObservabilityConstants.ExitCode, _exitCode);
+        trace?.SetStatus(Errored ? ActivityStatusCode.Error : ActivityStatusCode.Ok);
         
         return JsonSerializer.Deserialize(result, serialiserInfo);
     }

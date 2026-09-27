@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Channels;
 using CliWrap;
@@ -5,6 +6,7 @@ using CliWrap.EventStream;
 using Microsoft.Extensions.Logging;
 using Sarsoo.Terraform.MachineReadableUI;
 using Sarsoo.Terraform.MachineReadableUI.Json;
+using Sarsoo.Terraform.Observability;
 
 namespace Sarsoo.Terraform.Command;
 
@@ -53,6 +55,7 @@ public class TerraformStreamCommand
 
     public async Task Run(CancellationToken ct = default)
     {
+        using var trace = Tracing.Source.StartActivity();
         Exception? exception = null;
         try
         {
@@ -63,10 +66,11 @@ public class TerraformStreamCommand
                     switch (cmdEvent)
                     {
                         case StartedCommandEvent started:
+                            trace?.AddEvent(new("Process Started"));
                             _logger?.LogInformation("Process started; ID: {ProcessId}", started.ProcessId);
                             break;
                         case StandardOutputCommandEvent stdOut:
-                            
+
                             _jsonMessages?.Writer.TryWrite(stdOut.Text);
 
                             if (_messages is not null)
@@ -92,6 +96,7 @@ public class TerraformStreamCommand
                             _logger?.LogError(stdErr.Text);
                             break;
                         case ExitedCommandEvent exited:
+                            trace?.AddEvent(new("Process Ended"));
                             _logger?.LogInformation("Process exited; Code: {ExitCode}", exited.ExitCode);
                             _exitCode = exited.ExitCode;
                             break;
@@ -111,6 +116,8 @@ public class TerraformStreamCommand
         }
         finally
         {
+            trace?.SetStatus(Errored ? ActivityStatusCode.Error : ActivityStatusCode.Ok);
+        
             _messages?.Writer.Complete(exception);
             _jsonMessages?.Writer.Complete(exception);
         }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Sarsoo.Terraform.Command;
 using Sarsoo.Terraform.JsonOutput.Plan;
 using Sarsoo.Terraform.MachineReadableUI;
+using Sarsoo.Terraform.Observability;
 
 namespace Sarsoo.Terraform.Plan;
 
@@ -33,12 +34,17 @@ public class PlanGenerator: ITerraformCommandStreaming, ITerraformCommandSingle
 
     public async Task<string> Run(CancellationToken ct = default)
     {
+        using var trace = Tracing.Source.StartActivity();
         _logger?.LogInformation("Generating plan...");
         _generate.WithOutputFile(_filePath);
         await _generate.Run(ct).ConfigureAwait(false);
+        trace?.AddEvent(new("Binary Plan Generated"));
 
         _logger?.LogInformation("Generating json from plan bin...");
         _parse.WithPlanFile(_filePath);
-        return await _parse.Run(ct).ConfigureAwait(false);
+        var json = await _parse.Run(ct).ConfigureAwait(false);
+        trace?.AddEvent(new("JSON Plan Generated"));
+        
+        return json;
     }
 }
