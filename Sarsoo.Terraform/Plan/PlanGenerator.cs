@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
 using Sarsoo.Terraform.Command;
 using Sarsoo.Terraform.JsonOutput.Plan;
 using Sarsoo.Terraform.MachineReadableUI;
@@ -35,6 +36,7 @@ public class PlanGenerator: ITerraformCommandStreaming, ITerraformCommandSingle
     public async Task<string> Run(CancellationToken ct = default)
     {
         using var trace = Tracing.Source.StartActivity("PlanGenerator::Run");
+        Baggage.SetBaggage(ObservabilityConstants.BinaryPlanPath, _filePath);
         _logger?.LogInformation("Generating plan...");
         _generate.WithOutputFile(_filePath);
         await _generate.Run(ct).ConfigureAwait(false);

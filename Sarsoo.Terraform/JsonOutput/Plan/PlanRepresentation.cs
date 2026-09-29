@@ -8,6 +8,7 @@ namespace Sarsoo.Terraform.JsonOutput.Plan;
 public class PlanRepresentation
 {
     public string FormatVersion { get; set; }
+    public DateTime? Timestamp { get; set; }
 
     /// <summary>
     /// "prior_state" is a representation of the state that the configuration is being applied to, using the state representation described above.

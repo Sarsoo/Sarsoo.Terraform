@@ -5,7 +5,7 @@ namespace Sarsoo.Terraform.MachineReadableUI;
 [JsonConverter(typeof(JsonStringEnumConverter<ResourceAction>))]
 public enum ResourceAction
 {
-    [JsonStringEnumMemberName("noop")]
+    [JsonStringEnumMemberName("no-op")]
     NoOp,
     [JsonStringEnumMemberName("create")]
     Create,
