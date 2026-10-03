@@ -24,11 +24,14 @@ public class PlanGenerator: ITerraformCommandStreaming, ITerraformCommandSingle
     
     private string _filePath;
 
-    public PlanGenerator(string executable, string workingDirectory, string? planFileName = null, OutputFormat outputFormat = OutputFormat.Parsed, ILogger<PlanGenerator>? logger = null, ILogger<TerraformStreamCommand>? subLogger = null)
+    public PlanGenerator(string workingDirectory, string? planFileName = null, OutputFormat outputFormat = OutputFormat.Parsed, string? tfExecutable = null, ILogger<PlanGenerator>? logger = null, ILogger<TerraformStreamCommand>? subLogger = null)
     {
         _logger = logger;
-        _generate = new Sarsoo.Terraform.Command.Plan(executable, workingDirectory, outputFormat, logger: subLogger);
-        _parse = new ShowPlan(executable, workingDirectory);
+        _generate = new Sarsoo.Terraform.Command.Plan(workingDirectory, 
+            tfExecutable: tfExecutable, 
+            outputFormat: outputFormat, 
+            logger: subLogger);
+        _parse = new ShowPlan(workingDirectory, tfExecutable: tfExecutable);
         
         _filePath = planFileName ?? $"plan-{DateTime.UtcNow.ToString("yyyyMMdd'T'HHmmssfffzzz", DateTimeFormatInfo.InvariantInfo)}.tfplan";
     }

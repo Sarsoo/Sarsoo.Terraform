@@ -1,6 +1,6 @@
 namespace Sarsoo.Terraform.Exceptions;
 
-public class FilePathMissingException: Exception
+public class FilePathMissingException: TerraformException
 {
 
 }

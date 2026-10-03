@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using CliWrap;
 using CliWrap.Buffered;
+using Sarsoo.Terraform.IO;
 using Sarsoo.Terraform.Observability;
 
 namespace Sarsoo.Terraform.Command;
@@ -15,9 +16,9 @@ public class TerraformCommand
     public int ExitCode => _exitCode ?? throw new InvalidOperationException("Command has not finished");
     public bool Errored => ((_exitCode ?? 0) > 0);
 
-    public TerraformCommand(string executable)
+    public TerraformCommand(string? tfExecutable = null)
     {
-        Command = Cli.Wrap(executable)
+        Command = Cli.Wrap(ExeResolution.FindTerraformExePath(tfExecutable))
             .WithEnvironmentVariables(e => e.Set("TF_IN_AUTOMATION", "true"))
             .WithValidation(CommandResultValidation.None);
     }

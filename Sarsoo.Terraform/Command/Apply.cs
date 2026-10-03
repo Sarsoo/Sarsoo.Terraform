@@ -16,9 +16,9 @@ public class Apply: ITerraformCommandStreaming
     public bool Errored => _command.Errored;
     public int ExitCode =>  _command.ExitCode;
 
-    public Apply(string executable, string workingDirectory, OutputFormat outputFormat = OutputFormat.Parsed, ILogger<TerraformStreamCommand>? logger = null)
+    public Apply(string workingDirectory, OutputFormat outputFormat = OutputFormat.Parsed, string? tfExecutable = null, ILogger<TerraformStreamCommand>? logger = null)
     {
-        _command = new TerraformStreamCommand(executable, outputFormat, logger: logger)
+        _command = new TerraformStreamCommand(tfExecutable, outputFormat, logger: logger)
             .Configure(x => x.WithWorkingDirectory(workingDirectory));
     }
 

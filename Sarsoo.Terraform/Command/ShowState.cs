@@ -8,9 +8,9 @@ public class ShowState: ITerraformCommandSingle<StateRepresentation>
 {
     private readonly TerraformCommand _command;
 
-    public ShowState(string executable, string workingDirectory)
+    public ShowState(string workingDirectory, string? tfExecutable = null)
     {
-        _command = new TerraformCommand(executable)
+        _command = new TerraformCommand(tfExecutable)
             .Configure(x =>
                 x.WithArguments(["show", "-json"])
                     .WithWorkingDirectory(workingDirectory));

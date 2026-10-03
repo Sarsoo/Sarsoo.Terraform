@@ -11,9 +11,9 @@ public class ShowPlan: ITerraformCommandSingle<PlanRepresentation>
 
     private string? filePath = null;
 
-    public ShowPlan(string executable, string workingDirectory)
+    public ShowPlan(string workingDirectory, string? tfExecutable = null)
     {
-        _command = new TerraformCommand(executable)
+        _command = new TerraformCommand(tfExecutable)
             .Configure(x => x.WithWorkingDirectory(workingDirectory));
     }
 

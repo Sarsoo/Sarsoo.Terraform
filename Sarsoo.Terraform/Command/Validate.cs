@@ -7,9 +7,9 @@ public class Validate: ITerraformCommandSingle<ValidationOutput>
 {
     private readonly TerraformCommand _command;
 
-    public Validate(string executable, string workingDirectory)
+    public Validate(string workingDirectory, string? tfExecutable = null)
     {
-        _command = new TerraformCommand(executable)
+        _command = new TerraformCommand(tfExecutable)
             .Configure(x =>
                 x.WithArguments(["validate", "-json"])
                     .WithWorkingDirectory(workingDirectory));

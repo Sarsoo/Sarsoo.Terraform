@@ -4,6 +4,7 @@ using System.Threading.Channels;
 using CliWrap;
 using CliWrap.EventStream;
 using Microsoft.Extensions.Logging;
+using Sarsoo.Terraform.IO;
 using Sarsoo.Terraform.MachineReadableUI;
 using Sarsoo.Terraform.MachineReadableUI.Json;
 using Sarsoo.Terraform.Observability;
@@ -27,7 +28,7 @@ public class TerraformStreamCommand
     public ChannelReader<TerraformMessage>? MessageOutput => _messages?.Reader;
     public ChannelReader<string>? JsonOutput => _jsonMessages?.Reader;
 
-    public TerraformStreamCommand(string executable, OutputFormat outputFormat = OutputFormat.Parsed, ILogger<TerraformStreamCommand>? logger = null)
+    public TerraformStreamCommand(string? tfExecutable = null, OutputFormat outputFormat = OutputFormat.Parsed, ILogger<TerraformStreamCommand>? logger = null)
     {
         _outputFormat = outputFormat;
 
@@ -41,7 +42,7 @@ public class TerraformStreamCommand
         }
         
         _logger = logger;
-        Command = Cli.Wrap(executable)
+        Command = Cli.Wrap(ExeResolution.FindTerraformExePath(tfExecutable))
             .WithEnvironmentVariables(e => e.Set("TF_IN_AUTOMATION", "true"))
             .WithValidation(CommandResultValidation.None);
     }
