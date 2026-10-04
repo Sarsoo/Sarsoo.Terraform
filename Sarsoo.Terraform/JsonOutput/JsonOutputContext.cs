@@ -3,10 +3,16 @@ using Sarsoo.Terraform.JsonOutput.Change;
 using Sarsoo.Terraform.JsonOutput.Plan;
 using Sarsoo.Terraform.JsonOutput.State;
 using Sarsoo.Terraform.JsonOutput.Value;
+using Sarsoo.Terraform.MachineReadableUI.Plan;
 
 namespace Sarsoo.Terraform.JsonOutput;
 
-[JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
+[JsonSourceGenerationOptions(
+    PropertyNameCaseInsensitive = true, 
+    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower,
+    AllowOutOfOrderMetadataProperties = true,
+    NumberHandling = JsonNumberHandling.AllowReadingFromString
+)]
 [JsonSerializable(typeof(ValuesRepresentation))]
 [JsonSerializable(typeof(ModuleRepresentation))]
 [JsonSerializable(typeof(ResourceRepresentation))]
@@ -18,6 +24,8 @@ namespace Sarsoo.Terraform.JsonOutput;
 [JsonSerializable(typeof(ResourceChange))]
 [JsonSerializable(typeof(ResourceAttributeReference))]
 [JsonSerializable(typeof(ActionReason))]
+
+[JsonSerializable(typeof(Outputs))]
 
 [JsonSerializable(typeof(ChangeRepresentation))]
 

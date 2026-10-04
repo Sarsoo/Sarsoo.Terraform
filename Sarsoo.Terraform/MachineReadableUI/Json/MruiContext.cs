@@ -7,7 +7,8 @@ namespace Sarsoo.Terraform.MachineReadableUI.Json;
 [JsonSourceGenerationOptions(
     PropertyNameCaseInsensitive = true, 
     PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower, 
-    AllowOutOfOrderMetadataProperties = true
+    AllowOutOfOrderMetadataProperties = true,
+    NumberHandling = JsonNumberHandling.AllowReadingFromString
 )]
 [JsonSerializable(typeof(TerraformMessage))]
 

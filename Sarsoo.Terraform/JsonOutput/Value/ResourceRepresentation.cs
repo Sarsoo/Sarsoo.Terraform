@@ -1,6 +1,7 @@
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Sarsoo.Terraform.MachineReadableUI.Json;
 
 namespace Sarsoo.Terraform.JsonOutput.Value;
 
@@ -10,6 +11,7 @@ public class ResourceRepresentation
     public ResourceMode Mode { get; set; }
     public string Type { get; set; }
     public string Name { get; set; }
+    [JsonConverter(typeof(StringOrNumberConverter))]
     public string? Index { get; set; }
     [JsonPropertyName("provider_name")]
     public string Provider { get; set; }

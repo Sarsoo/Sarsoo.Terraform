@@ -18,7 +18,8 @@ public enum ResourceAction
     Delete,
     Move,
     Import,
-    Remove
+    Remove,
+    Forget
 }
 
 /// <summary>
@@ -45,6 +46,7 @@ public sealed class ResourceActionJsonConverter : JsonConverter<ResourceAction>
             ["move"] = ResourceAction.Move,
             ["import"] = ResourceAction.Import,
             ["remove"] = ResourceAction.Remove,
+            ["forget"] = ResourceAction.Forget,
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
     private static readonly FrozenDictionary<ResourceAction, string> WriteNames =
@@ -62,6 +64,7 @@ public sealed class ResourceActionJsonConverter : JsonConverter<ResourceAction>
             [ResourceAction.Move] = "move",
             [ResourceAction.Import] = "import",
             [ResourceAction.Remove] = "remove",
+            [ResourceAction.Forget] = "forget",
         }.ToFrozenDictionary();
 
     public override ResourceAction Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
