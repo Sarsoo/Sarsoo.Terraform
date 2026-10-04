@@ -26,5 +26,7 @@ public enum ResourceAction
     [JsonStringEnumMemberName("move")]
     Move,
     [JsonStringEnumMemberName("import")]
-    Import
+    Import,
+    [JsonStringEnumMemberName("remove")]
+    Remove
 }
