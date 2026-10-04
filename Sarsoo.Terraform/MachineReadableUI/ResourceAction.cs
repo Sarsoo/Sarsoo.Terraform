@@ -11,6 +11,12 @@ public enum ResourceAction
     Create,
     [JsonStringEnumMemberName("read")]
     Read,
+    [JsonStringEnumMemberName("start")]
+    Start,
+    [JsonStringEnumMemberName("open")]
+    Open,
+    [JsonStringEnumMemberName("close")]
+    Close,
     [JsonStringEnumMemberName("update")]
     Update,
     [JsonStringEnumMemberName("replace")]

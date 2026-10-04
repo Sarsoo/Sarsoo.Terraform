@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Sarsoo.Terraform.MachineReadableUI.Json;
 
 namespace Sarsoo.Terraform.MachineReadableUI;
 
@@ -33,6 +34,7 @@ public struct Resource
     /// the address key (count or for_each value), or null if the neither are used
     /// </summary>
     [JsonPropertyName("resource_key")]
+    [JsonConverter(typeof(StringOrNumberConverter))]
     public string? Key { get; set; }
     /// <summary>
     /// the provider type implied by the resource type; this may not reflect the resource's provider if provider aliases are used

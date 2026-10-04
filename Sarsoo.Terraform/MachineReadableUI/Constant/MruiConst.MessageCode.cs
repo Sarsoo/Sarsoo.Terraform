@@ -158,6 +158,14 @@ public static partial class MruiConst
                 public const string Errored = "provision_errored";
             }
 
+            public static class Ephemeral
+            {
+                public const string Start = "ephemeral_op_start";
+                public const string Progress = "ephemeral_op_progress";
+                public const string Complete = "ephemeral_op_complete";
+                public const string Errored = "ephemeral_op_errored";
+            }
+
             /// <summary>
             /// sequence of messages indicating progress of a single resource through refresh
             /// </summary>

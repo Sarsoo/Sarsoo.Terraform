@@ -5,7 +5,7 @@ namespace Sarsoo.Terraform.MachineReadableUI;
 public struct Hook
 {
     public Resource Resource { get; set; }
-    public ResourceAction Action { get; set; }
+    public ResourceAction? Action { get; set; }
 
     /// <summary>
     /// time elapsed since the apply operation started, expressed as an integer number of seconds

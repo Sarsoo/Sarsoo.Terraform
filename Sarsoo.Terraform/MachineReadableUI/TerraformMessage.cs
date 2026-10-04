@@ -36,10 +36,10 @@ namespace Sarsoo.Terraform.MachineReadableUI;
 [JsonDerivedType(typeof(ProvisionCompleteMessage), typeDiscriminator: MruiConst.MessageCode.ResourceProgress.Provision.Complete)]
 [JsonDerivedType(typeof(ProvisionErroredMessage), typeDiscriminator: MruiConst.MessageCode.ResourceProgress.Provision.Errored)]
 
-[JsonDerivedType(typeof(EphemeralStartMessage), typeDiscriminator: "ephemeral_op_start")]
-[JsonDerivedType(typeof(EphemeralProgressMessage), typeDiscriminator: "ephemeral_op_progress")]
-[JsonDerivedType(typeof(EphemeralCompleteMessage), typeDiscriminator: "ephemeral_op_complete")]
-[JsonDerivedType(typeof(EphemeralErroredMessage), typeDiscriminator: "ephemeral_op_errored")]
+[JsonDerivedType(typeof(EphemeralStartMessage), typeDiscriminator: MruiConst.MessageCode.ResourceProgress.Ephemeral.Start)]
+[JsonDerivedType(typeof(EphemeralProgressMessage), typeDiscriminator: MruiConst.MessageCode.ResourceProgress.Ephemeral.Progress)]
+[JsonDerivedType(typeof(EphemeralCompleteMessage), typeDiscriminator: MruiConst.MessageCode.ResourceProgress.Ephemeral.Complete)]
+[JsonDerivedType(typeof(EphemeralErroredMessage), typeDiscriminator: MruiConst.MessageCode.ResourceProgress.Ephemeral.Errored)]
 
 [JsonDerivedType(typeof(RefreshStartMessage), typeDiscriminator: MruiConst.MessageCode.ResourceProgress.Refresh.Start)]
 [JsonDerivedType(typeof(RefreshCompleteMessage), typeDiscriminator: MruiConst.MessageCode.ResourceProgress.Refresh.Complete)]
