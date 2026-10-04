@@ -76,19 +76,28 @@ public class TerraformStreamCommand
 
                             if (_messages is not null)
                             {
-                                var message = JsonSerializer.Deserialize(stdOut.Text, MruiContext.Default.TerraformMessage);
-                            
-                                if (message is not null)
+                                try
                                 {
-                                    if (message.Level.Equals("error", StringComparison.OrdinalIgnoreCase))
+                                    var message = JsonSerializer.Deserialize(stdOut.Text,
+                                        MruiContext.Default.TerraformMessage);
+
+                                    if (message is not null)
                                     {
-                                        _errorLogFound = true;
+                                        if (message.Level.Equals("error", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            _errorLogFound = true;
+                                        }
+
+                                        _messages?.Writer.TryWrite(message);
                                     }
-                                    _messages?.Writer.TryWrite(message);
+                                    else
+                                    {
+                                        _logger?.LogWarning("JSON deserialisation returned null");
+                                    }
                                 }
-                                else
+                                catch (JsonException e)
                                 {
-                                    _logger?.LogWarning("JSON deserialisation returned null");
+                                    _logger?.LogError(e, "Json message could not be deserialized, parsed message has not been written for downstream: " + stdOut.Text);
                                 }
                             }
                             
