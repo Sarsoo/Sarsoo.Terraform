@@ -17,8 +17,6 @@ public enum ChangeReason
     WrongRepetition,
     [JsonStringEnumMemberName("delete_because_count_index")]
     CountIndex,
-    [JsonStringEnumMemberName("delete_because_no_move_target")]
-    NoMoveTarget,
     [JsonStringEnumMemberName("delete_because_each_key")]
     EachKey,
     [JsonStringEnumMemberName("delete_because_no_module")]

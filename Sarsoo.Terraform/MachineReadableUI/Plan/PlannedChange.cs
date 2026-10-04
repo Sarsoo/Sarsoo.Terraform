@@ -23,5 +23,5 @@ public struct PlannedChange
     /// <summary>
     /// an optional reason for the change, only used when the action is replace or delete.
     /// </summary>
-    public ChangeReason? Reason { get; set; }
+    public Reason? Reason { get; set; }
 }

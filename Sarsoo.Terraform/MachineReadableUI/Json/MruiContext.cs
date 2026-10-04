@@ -20,6 +20,7 @@ namespace Sarsoo.Terraform.MachineReadableUI.Json;
 [JsonSerializable(typeof(ChangeReason))]
 
 [JsonSerializable(typeof(Hook))]
+[JsonSerializable(typeof(Reason))]
 
 [JsonSerializable(typeof(ValidationOutput))]
 [JsonSerializable(typeof(ValidationDiagnostic))]
