@@ -14,8 +14,9 @@ public class Plan: ITerraformCommandStreaming
 
     private string? _outputPath = null;
     
-    public bool Errored => _command.Errored;
+    public bool Errored => _command.ExitCode == 1 || _command.ErrorLogFound;
     public int ExitCode =>  _command.ExitCode;
+    public bool ErrorLogFound =>  _command.ErrorLogFound;
 
     public Plan(string workingDirectory, OutputFormat outputFormat = OutputFormat.Parsed, string? tfExecutable = null, ILogger<TerraformStreamCommand>? logger = null)
     {

@@ -11,6 +11,7 @@ public interface ITerraformCommand
 
 public interface ITerraformCommandStreaming : ITerraformCommand
 {
+    bool ErrorLogFound { get; }
     ChannelReader<TerraformMessage>? Output { get; }
     ChannelReader<string>? JsonOutput { get; }
     Task Run(CancellationToken ct);

@@ -15,8 +15,9 @@ public class PlanGenerator: ITerraformCommandStreaming, ITerraformCommandSingle
     private Sarsoo.Terraform.Command.Plan _generate;
     private ShowPlan _parse;
     
-    public bool Errored => _generate.Errored;
-    public int ExitCode { get; }
+    public bool Errored => _generate.Errored || _parse.Errored;
+    public int ExitCode => _generate.ExitCode;
+    public bool ErrorLogFound => _generate.ErrorLogFound;
 
     public ChannelReader<TerraformMessage>? Output => _generate.Output;
     public ChannelReader<string>? JsonOutput =>  _generate.JsonOutput;

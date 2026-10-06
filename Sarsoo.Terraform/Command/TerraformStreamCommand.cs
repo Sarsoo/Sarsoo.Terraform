@@ -23,6 +23,7 @@ public class TerraformStreamCommand
     private int? _exitCode = null;
     public int ExitCode => _exitCode ?? throw new InvalidOperationException("Command has not finished");
     public bool Errored => ((_exitCode ?? 0) > 0) || _errorLogFound;
+    public bool ErrorLogFound => _errorLogFound;
     private bool _errorLogFound = false;
 
     public ChannelReader<TerraformMessage>? MessageOutput => _messages?.Reader;

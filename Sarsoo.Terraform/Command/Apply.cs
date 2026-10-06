@@ -15,6 +15,7 @@ public class Apply: ITerraformCommandStreaming
     
     public bool Errored => _command.Errored;
     public int ExitCode =>  _command.ExitCode;
+    public bool ErrorLogFound => _command.ErrorLogFound;
 
     public Apply(string workingDirectory, OutputFormat outputFormat = OutputFormat.Parsed, string? tfExecutable = null, ILogger<TerraformStreamCommand>? logger = null)
     {
